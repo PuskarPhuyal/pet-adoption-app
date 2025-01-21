@@ -1,0 +1,42 @@
+# General patterns
+node_modules/
+.expo/
+dist/
+web-build/
+build/
+.expo-shared/
+
+# Local environment files
+.env
+.env.*
+.env*.local
+
+# Native files
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Debug files
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+*.log
+
+# macOS
+.DS_Store
+*.pem
+
+# TypeScript
+*.tsbuildinfo
+
+# Editor/IDE files
+.vscode/
+.idea/
+*.swp
+*.suo
+
+
+serviceAccountKey.json
