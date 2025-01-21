@@ -8,5 +8,7 @@ export default{
     GRAY: '#6C757D', // Cool slate gray
     // WHITE: '#FAF3F3', // Soft blush white
     SECONDARY: '#7FD4FF', // Soft teal blue
-    LIGHT_PRIMARY: '#D4FFD4' // Fresh mint green
+    LIGHT_PRIMARY: '#D4FFD4', // Fresh mint green
+    LIGHT_GRAY: '#F7F7F7', // New light background color
+    DARK: '#333333', 
 }
