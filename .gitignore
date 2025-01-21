@@ -5,6 +5,7 @@ dist/
 web-build/
 build/
 .expo-shared/
+expo-env.d.ts
 
 # Local environment files
 .env
