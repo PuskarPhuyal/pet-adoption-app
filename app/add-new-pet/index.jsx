@@ -1,18 +1,23 @@
-import { View, Text, Image, TextInput, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
+import { View, Text, Image, TextInput, StyleSheet, ScrollView, TouchableOpacity, Pressable, ToastAndroid } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useNavigation } from 'expo-router'
 import Colors from '../../constants/Colors';
 import { Picker } from '@react-native-picker/picker';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../config/FirebaseConfig';
+import * as ImagePicker from 'expo-image-picker';
+
 
 
 export default function AddNewPet() {
     const navigation=useNavigation();
-    const [formData, setFormData] = useState();
+    const [formData, setFormData] = useState({
+      category:'Fish',sex:'Male'
+    });
     const [gender,setGender]=useState();
     const [categoryList, setCategoryList] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState();
+    const [image,setImage] = useState();
 
     useEffect(()=>{
         navigation.setOptions({
@@ -31,12 +36,43 @@ export default function AddNewPet() {
           setCategoryList(categoryList=>[...categoryList,doc.data()])
         })
       }
+ 
+    //Used to pick image from gallery
+    const imagePicker = async () => {
+      try {
+        const result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ['images'], // Use the correct option
+          allowsEditing: true,
+          aspect: [4, 3],
+          quality: 1,
+        });
+    
+        console.log(result);
+    
+        if (!result.canceled && result.assets && result.assets.length > 0) {
+          setImage(result.assets[0].uri);
+        } else {
+          console.log("Image selection was canceled or no assets found.");
+        }
+      } catch (error) {
+        console.error("Error picking image:", error);
+      }
+    };
 
     const handleInputChange=(fieldName,fieldValue)=>{
         setFormData(prev=>({
           ...prev,
           [fieldName]:fieldValue
         }));
+    }
+
+    const onSubmit=()=>{
+      if(Object.keys(formData).length!=8)
+      { ToastAndroid.show('Enter All Details',ToastAndroid.SHORT)
+        return;
+      }
+      
+      
     }
 
   return (
@@ -50,15 +86,25 @@ export default function AddNewPet() {
       }
       }
       >Add New Pet for adoption</Text>
-      <Image source={require('./../../assets/images/placeholder.jpg')}
-      style={{
-        width:100,
-        height:100,
-        borderRadius:15,
-        borderWidth:1,
-        borderColor:Colors.GRAY
-      }}
-      />
+
+      <Pressable onPress={imagePicker}>
+        {!image? <Image source={require('./../../assets/images/placeholder.jpg')}
+        style={{
+          width:100,
+          height:100,
+          borderRadius:15,
+          borderWidth:1,
+          borderColor:Colors.GRAY
+        }}
+        />:
+        <Image source={{uri:image}} style={{
+          width:100,
+          height:100,
+          borderRadius:15,
+          borderWidth:1,
+          borderColor:Colors.GRAY
+        }}/>}
+      </Pressable>
 
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Pet Name *</Text>
@@ -94,6 +140,7 @@ export default function AddNewPet() {
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Age *</Text>
         <TextInput placeholder="Pet's Age" style={styles.input} 
+          keyboardType='number-pad'
         onChangeText={(value)=>handleInputChange('age',value)}/>
       </View>
 
@@ -115,8 +162,9 @@ export default function AddNewPet() {
       </View>
 
       <View style={styles.inputContainer}>
-        <Text style={styles.label}>Weight *</Text>
+        <Text style={styles.label}>Weight in kg *</Text>
         <TextInput placeholder="Pet's Weight" style={styles.input} 
+          keyboardType='number-pad'
         onChangeText={(value)=>handleInputChange('weight',value)}/>
       </View>
 
