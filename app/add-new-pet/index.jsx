@@ -1,11 +1,14 @@
-import { View, Text, Image, TextInput, StyleSheet, ScrollView, TouchableOpacity, Pressable, ToastAndroid } from 'react-native'
+import { View, Text, Image, TextInput, StyleSheet, ScrollView, TouchableOpacity, Pressable, ToastAndroid, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { useNavigation } from 'expo-router'
+import { useNavigation, useRouter } from 'expo-router'
 import Colors from '../../constants/Colors';
 import { Picker } from '@react-native-picker/picker';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../../config/FirebaseConfig';
+import { collection, doc, getDocs, setDoc } from 'firebase/firestore';
+import { db, storage } from '../../config/FirebaseConfig';
 import * as ImagePicker from 'expo-image-picker';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { useUser } from '@clerk/clerk-expo';
+
 
 
 
@@ -18,6 +21,9 @@ export default function AddNewPet() {
     const [categoryList, setCategoryList] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState();
     const [image,setImage] = useState();
+    const [loader,setLoader]=useState(false);
+    const {user}=useUser();
+    const router = useRouter();
 
     useEffect(()=>{
         navigation.setOptions({
@@ -72,8 +78,67 @@ export default function AddNewPet() {
         return;
       }
       
-      
+      UploadImage();
     }
+
+    //Used to upload Pet Image to firebase storage 
+
+    const UploadImage=async()=>{
+        setLoader(true);
+        const resp = await fetch(image);
+        const blobImage = await resp.blob();
+        const storageRef = ref(storage,'/PetAdopt/'+Date.now()+'.jpg');
+
+        uploadBytes(storageRef,blobImage).then((snapshot)=>{
+          console.log('File Uploaded')
+        }).then(resp=>{
+          getDownloadURL(storageRef).then(async(downloadUrl)=>{
+            console.log(downloadUrl);
+            SaveFormData(downloadUrl);
+          })
+        })
+
+    }
+
+    const SaveFormData =async(imageUrl)=>{
+      const docId = Date.now().toString();
+      await setDoc(doc(db,'Pets',docId),{
+          ...formData,
+          imageUrl:imageUrl,
+          username:user?.fullName,
+          email:user?.primaryEmailAddress.emailAddress,
+          userImage:user?.imageUrl,
+          id:docId
+      })
+      setLoader(false);
+      router.replace('/(tabs)/home')
+    }
+
+    // const SaveFormData = async (downloadUrl) => {
+    //   const docId = Date.now().toString();
+    //   try {
+    //     // Ensure `user` and nested properties exist
+    //     if (!user || !user.primaryEmailAddress?.emailAddress) {
+    //       throw new Error("User details are incomplete");
+    //     }
+    
+    //     // Save the document to Firestore
+    //     await setDoc(doc(db, 'Pets', docId), {
+    //       ...formData, // Ensure formData is sanitized
+    //       imageUrl: downloadUrl,
+    //       username: user.fullName || "Anonymous", // Fallback for username
+    //       email: user.primaryEmailAddress.emailAddress,
+    //       userImage: user.imageUrl || "", // Fallback for user image
+    //       id: docId,
+    //     });
+    //   } catch (error) {
+    //     console.error("Error saving data:", error);
+    //     // Handle the error, e.g., show a toast or alert
+    //   } finally {
+    //     setLoader(false); // Always reset the loader, success or failure
+    //   }
+    // };
+    
 
   return (
     <ScrollView style={{
@@ -182,11 +247,15 @@ export default function AddNewPet() {
         onChangeText={(value)=>handleInputChange('about',value)}/>
       </View>
 
-      <TouchableOpacity style={styles.button} onPress={onSubmit}>
+      <TouchableOpacity 
+      style={styles.button} 
+      disabled={loader}
+      onPress={onSubmit}>
+        {loader?<ActivityIndicator size={'large'}/>:
         <Text style={{
           fontFamily:'outfit-medium',
           textAlign:'center'
-        }}>Submit</Text>
+        }}>Submit</Text>}
       </TouchableOpacity>
     </ScrollView>
   )
