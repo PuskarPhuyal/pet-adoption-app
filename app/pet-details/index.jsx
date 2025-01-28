@@ -52,7 +52,8 @@ export default function PetDetails() {
                 imageUrl:pet?.userImage,
                 name:pet?.username
               }
-            ]
+            ],
+            userIds:[user?.primaryEmailAddress?.emailAddress,pet?.email]
           });
           router.push({
               pathname:'/chat',
