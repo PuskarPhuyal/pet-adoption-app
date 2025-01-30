@@ -34,7 +34,7 @@ export default function ChatScreen() {
     const result = docSnap.data();
     // console.log(result);
     const otherUser = result?.users.filter(item=>item.email.toLowerCase()!==user?.primaryEmailAddress?.emailAddress);
-    console.log(otherUser);
+    // console.log(otherUser);
     
     //Set Chat person name on top of screen 
     navigation.setOptions({
