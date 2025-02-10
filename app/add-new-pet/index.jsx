@@ -209,6 +209,7 @@ export default function AddNewPet() {
         onChangeText={(value)=>handleInputChange('age',value)}/>
       </View>
 
+{/* Pet's Gender  */}
       <View style={styles.inputContainer}>
       <Text style={styles.label}>Gender *</Text>
           <Picker
@@ -233,12 +234,14 @@ export default function AddNewPet() {
         onChangeText={(value)=>handleInputChange('weight',value)}/>
       </View>
 
+{/* Address */}
       <View style={styles.inputContainer}>
         <Text style={styles.label}>Address *</Text>
         <TextInput placeholder="Pet's Address" style={styles.input} 
         onChangeText={(value)=>handleInputChange('address',value)}/>
       </View>
-
+      
+{/* About Section  */}
       <View style={styles.inputContainer}>
         <Text style={styles.label} >About *</Text>
         <TextInput  style={styles.input} 
