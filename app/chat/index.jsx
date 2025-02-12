@@ -14,6 +14,10 @@ export default function ChatScreen() {
   const [messages, setMessages] = useState([])
 
   useEffect(()=>{
+    navigation.setOptions({
+      headerShown:true,
+      headerTitle:'Loading ...'
+    })
     GetUserDetails();
     // console.log("Logged-in user's email:", user?.primaryEmailAddress?.emailAddress);
 

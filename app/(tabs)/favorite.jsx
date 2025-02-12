@@ -46,6 +46,7 @@ export default function Favorite() {
     <View style={{
       padding:20,
       marginTop:20,
+
     }}>
       <Text style={{
         fontFamily:'outfit-medium',
@@ -54,6 +55,7 @@ export default function Favorite() {
 
       <FlatList
       data={favPetList}
+      numColumns={2}
       onRefresh={GetFavPetIds}
       refreshing={loader}
       renderItem={({item,index})=>(
